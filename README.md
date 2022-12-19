@@ -6,8 +6,12 @@ I recommend you watch at least the first couple minutes of this video before usi
 splines, and highly recommend watching it in its entirety if you have the time.
 
 ## Controls
-Left/Right - Changes the type of spline. Right now there are only two: quadratic and cubic.
+Left/Right Arrows - Changes the type of spline. Right now there are only two: quadratic and cubic.
+
 Left Click - Adds a new point
+
 Right Click - Moves the position of the control point
+
 Space - Draws the spline(s)
+
 C - Clears all points and lines
