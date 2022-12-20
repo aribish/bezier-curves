@@ -1,7 +1,3 @@
-// TODO:
-// be able to increase control points to greater numbers
-// and generate curves more generally
-
 #include <stdio.h>
 #include <stdbool.h>
 #include <SDL2/SDL.h>
@@ -15,11 +11,14 @@
 #define CUBIC 1
 #define MAX_TYPE_ID CUBIC
 
-#define SDL_COLOR(r, g, b) SDL_SetRenderDrawColor(render, r, g, b, 255)
-
 typedef struct {
 	int x, y;
 } point_t;
+
+
+typedef struct {
+	int r, g, b;
+} color_t;
 
 SDL_Window* win;
 SDL_Renderer* render;
@@ -30,6 +29,18 @@ point_t newPoint_t(int x, int y) {
 	p.x = x;
 	p.y = y;
 	return p;
+}
+
+color_t newColor_t(int r, int g, int b) {
+	color_t c;
+	c.r = r;
+	c.g = g;
+	c.b = b;
+	return c;
+}
+
+void setRenderColor(color_t c) {
+	SDL_SetRenderDrawColor(render, c.r, c.g, c.b, 255);
 }
 
 point_t lerp(point_t point1, point_t point2, float t) { // where p1 < p2 and 0 < t < 1
@@ -48,18 +59,21 @@ int main() {
 	};
 	int nPoints = 0, iControlPoint = 0, nControlPoints = 1, type = QUADRATIC;
 	float precision = 0.02;
+	color_t bgColor = newColor_t(0, 0, 0);
+	color_t cpColor = newColor_t(0, 0x88, 0xFF);
+	color_t ptColor = newColor_t(0xFF, 0x88, 0);
 
 	if(SDL_Init(SDL_INIT_VIDEO) < 0) {
 		printf("Error: Failed to init SDL");
 		return 1;
 	}
 
-	win = SDL_CreateWindow("Splines", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, WIN_WIDTH, WIN_HEIGHT, 0);
+	win = SDL_CreateWindow("Bezier Curves", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, WIN_WIDTH, WIN_HEIGHT, 0);
 	render = SDL_CreateRenderer(win, -1, 0);
 
-	SDL_COLOR(0, 0, 0);
+	setRenderColor(bgColor);
 	SDL_RenderClear(render);
-	SDL_COLOR(0, 0x88, 0xFF);
+	setRenderColor(cpColor);
 	SDL_RenderDrawPoint(render, controlPoints[0].x, controlPoints[0].y);
 	SDL_RenderPresent(render);
 
@@ -70,20 +84,19 @@ int main() {
 				goto exit;
 			} else if(event.type == SDL_KEYUP) {
 				if(event.key.keysym.sym == SDLK_c) {
-					nPoints = 0;
-
 					clear:
-					SDL_COLOR(0, 0, 0);
+					nPoints = 0;
+					setRenderColor(bgColor);
 					SDL_RenderClear(render);
 					
-					SDL_COLOR(0, 0x88, 0xFF);
+					setRenderColor(cpColor);
 					for(int i = 0; i < nControlPoints; i++) {
 						SDL_RenderDrawPoint(render, controlPoints[i].x, controlPoints[i].y);
 					}
 
 					SDL_RenderPresent(render);
 				} else if(event.key.keysym.sym == SDLK_SPACE && nPoints >= 2) {
-					SDL_COLOR(0xFF, 0x88, 0);
+					setRenderColor(ptColor);
 					
 					for(float t = 0; t < 1; t += precision) {
 						for(int i = 0; i < ((nPoints == 2) ? 1 : nPoints); i++) {
@@ -127,14 +140,14 @@ int main() {
 				}		
 			} else if(event.type == SDL_MOUSEBUTTONUP && nPoints < MAX_POINTS) {
 				if(event.button.button == SDL_BUTTON_LEFT) {
-					SDL_COLOR(0xFF, 0x88, 0);
+					setRenderColor(ptColor);
 					points[nPoints] = newPoint_t(event.button.x, event.button.y);
 					nPoints++;
 				} else if(event.button.button == SDL_BUTTON_RIGHT) {
-					SDL_COLOR(0, 0, 0);
+					setRenderColor(bgColor);
 					SDL_RenderDrawPoint(render, controlPoints[iControlPoint].x, controlPoints[iControlPoint].y);
 
-					SDL_COLOR(0, 0x88, 0xFF);
+					setRenderColor(cpColor);
 					controlPoints[iControlPoint].x = event.button.x;
 					controlPoints[iControlPoint].y = event.button.y;
 					SDL_RenderDrawPoint(render, controlPoints[iControlPoint].x, controlPoints[iControlPoint].y);
