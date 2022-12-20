@@ -9,12 +9,12 @@ I will be adding more programs and modifying the existing one in the future, but
 math behind bezier curves, which is much more involved that I thought. I don't know anything about precalc :(
 
 ## Controls
-Left/Right Arrows - Changes the type of spline. Right now there are only two: quadratic and cubic.
+Left/Right Arrows - Changes the type of curve. Right now there are only two: quadratic and cubic.
 
 Left Click - Adds a new point
 
 Right Click - Moves the position of the control point
 
-Space - Draws the spline(s)
+Space - Draws the curve(s)
 
 C - Clears all points and lines
